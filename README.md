@@ -29,7 +29,7 @@ A simple yet powerful invoice generator that creates professional PDF invoices t
 
 1. Clone the repository:
 
-git clone https://github.com/yourusername/invoice-generator-api.git
+git clone https://github.com/T1M00R/invoice-generator-api.git
 cd invoice-generator-api
 
 2. Install dependencies:
