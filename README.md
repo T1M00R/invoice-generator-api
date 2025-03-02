@@ -18,13 +18,13 @@ A simple yet powerful invoice generator that creates professional PDF invoices t
 
 ## Technologies Used
 
-- Backend:
+- **Backend**:
   - Node.js
   - Express.js
   - PDFKit for PDF generation
   - Joi for request validation
 
-- Frontend:
+- **Frontend**:
   - HTML5
   - CSS3
   - Vanilla JavaScript
@@ -33,26 +33,34 @@ A simple yet powerful invoice generator that creates professional PDF invoices t
 
 1. Clone the repository:
 
+```
 git clone https://github.com/T1M00R/invoice-generator-api.git
 cd invoice-generator-api
+```
 
 2. Install dependencies:
 
+```
 npm install
+```
 
-3. Create a .env file in the root directory (optional):
+3. Create a `.env` file in the root directory (optional):
 
+```
 PORT=3000
+```
 
 4. Start the development server:
 
+```
 npm run dev
+```
 
 ## Usage
 
 ### Web Interface
 
-1. Open your browser and navigate to http://localhost:3000
+1. Open your browser and navigate to `http://localhost:3000`
 2. Fill in your company information, including optional logo
 3. Enter the client information, invoice details, and add items
 4. Set tax rate if applicable
@@ -63,8 +71,9 @@ npm run dev
 
 ### API Usage
 
-To generate an invoice programmatically, send a POST request to /api/invoices/pdf or /api/invoices/json with the following JSON structure:
+To generate an invoice programmatically, send a POST request to `/api/invoices/pdf` or `/api/invoices/json` with the following JSON structure:
 
+```json
 {
   "company": {
     "name": "Your Company Name",
@@ -96,9 +105,11 @@ To generate an invoice programmatically, send a POST request to /api/invoices/pd
   "template": "classic",
   "currency": "USD"
 }
+```
 
 Example using cURL:
 
+```
 curl -X POST \
   http://localhost:3000/api/invoices/pdf \
   -H 'Content-Type: application/json' \
@@ -132,80 +143,83 @@ curl -X POST \
     "template": "classic",
     "currency": "USD"
   }'
+```
 
 ## Project Structure
 
+```
 invoice-generator-api/
-├── frontend/                      # Frontend files
-│   ├── index.html                 # Main HTML file
-│   ├── script.js                  # Frontend JavaScript
-│   └── styles.css                 # CSS styles
-├── src/                           # Backend source code
-│   ├── app.js                     # Express application
-│   ├── controllers/               # Route controllers
+├── frontend/               # Frontend files
+│   ├── index.html         # Main HTML file
+│   ├── script.js          # Frontend JavaScript
+│   └── styles.css         # CSS styles
+├── src/                    # Backend source code
+│   ├── app.js             # Express application
+│   ├── controllers/       # Route controllers
 │   │   └── invoiceController.js
-│   ├── middleware/                # Express middleware
+│   ├── middleware/        # Express middleware
 │   │   └── validator.js
-│   ├── routes/                    # API routes
+│   ├── routes/            # API routes
 │   │   └── invoiceRoutes.js
-│   ├── services/                  # Business logic
+│   ├── services/          # Business logic
 │   │   └── pdfGenerator.js
-│   └── utils/                     # Utility functions
+│   └── utils/             # Utility functions
 │       └── errorHandler.js
-├── .gitignore                     # Git ignore file
-├── package.json                   # NPM package config
-└── README.md                      # This file
+├── .gitignore             # Git ignore file
+├── package.json           # NPM package config
+└── README.md              # This file
+```
 
 ## API Documentation
 
 ### Generate PDF Invoice
 
-Endpoint: POST /api/invoices/pdf
+**Endpoint:** `POST /api/invoices/pdf`
 
-Content-Type: application/json
+**Content-Type:** `application/json`
 
-Request Body:
+**Request Body:**
 
-Field | Type | Description
-------|------|-------------
-company | Object | Your company information
-company.name | String | Company name
-company.logo | String | Base64 encoded logo (optional)
-client | Object | Client information
-client.name | String | Client name
-client.address | String | Client address
-client.email | String | Client email
-client.phone | String | Client phone (optional)
-invoice | Object | Invoice details
-invoice.invoiceNumber | String | Invoice number
-invoice.date | String (ISO date) | Invoice date
-invoice.dueDate | String (ISO date) | Due date
-items | Array | Array of invoice items
-items[].description | String | Item description
-items[].quantity | Number | Item quantity
-items[].unitPrice | Number | Price per unit
-tax | Object | Tax information (optional)
-tax.rate | Number | Tax rate (0 to 1)
-tax.description | String | Tax description
-notes | String | Additional notes (optional)
-template | String | PDF template (classic, modern, minimal)
-currency | String | Currency code (USD, EUR, GBP, JPY, CAD, AUD)
+| Field | Type | Description |
+|-------|------|-------------|
+| company | Object | Your company information |
+| company.name | String | Company name |
+| company.logo | String | Base64 encoded logo (optional) |
+| client | Object | Client information |
+| client.name | String | Client name |
+| client.address | String | Client address |
+| client.email | String | Client email |
+| client.phone | String | Client phone (optional) |
+| invoice | Object | Invoice details |
+| invoice.invoiceNumber | String | Invoice number |
+| invoice.date | String (ISO date) | Invoice date |
+| invoice.dueDate | String (ISO date) | Due date |
+| items | Array | Array of invoice items |
+| items[].description | String | Item description |
+| items[].quantity | Number | Item quantity |
+| items[].unitPrice | Number | Price per unit |
+| tax | Object | Tax information (optional) |
+| tax.rate | Number | Tax rate (0 to 1) |
+| tax.description | String | Tax description |
+| notes | String | Additional notes (optional) |
+| template | String | PDF template (classic, modern, minimal) |
+| currency | String | Currency code (USD, EUR, GBP, JPY, CAD, AUD) |
 
-Response:
+**Response:**
 
 A PDF file with the generated invoice.
 
 ### Generate JSON Invoice
 
-Endpoint: POST /api/invoices/json
+**Endpoint:** `POST /api/invoices/json`
 
-Content-Type: application/json
+**Content-Type:** `application/json`
 
-Request Body:
+**Request Body:**
 
 Same as for the PDF endpoint.
 
-Response:
+**Response:**
 
 A JSON file with the invoice data including calculated totals.
 
