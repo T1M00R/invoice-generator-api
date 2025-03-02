@@ -5,12 +5,16 @@ A simple yet powerful invoice generator that creates professional PDF invoices t
 ## Features
 
 - Generate professional PDF invoices via API or web interface
-- Customizable client information
+- Customizable company and client information
+- Company logo support
+- Multiple invoice templates
 - Support for multiple invoice items
-- Tax calculation
+- Tax calculation with custom descriptions
+- Multiple currency support (USD, EUR, GBP, JPY, CAD, AUD)
 - Live total calculation
+- Export as PDF or JSON
 - Responsive design
-- Download generated invoices as PDF files
+- Download generated invoices instantly
 
 ## Technologies Used
 
@@ -49,15 +53,23 @@ npm run dev
 ### Web Interface
 
 1. Open your browser and navigate to `http://localhost:3000`
-2. Fill in the client information, invoice details, and add items
-3. Set tax rate if applicable
-4. Click "Generate Invoice" to create and download the PDF
+2. Fill in your company information, including optional logo
+3. Enter the client information, invoice details, and add items
+4. Set tax rate if applicable
+5. Choose an invoice template
+6. Select your preferred currency
+7. Choose export format (PDF or JSON)
+8. Click "Generate Invoice" to create and download the file
 
 ### API Usage
 
-To generate an invoice programmatically, send a POST request to `/api/invoices` with the following JSON structure:
+To generate an invoice programmatically, send a POST request to `/api/invoices/pdf` or `/api/invoices/json` with the following JSON structure:
 
 {
+  "company": {
+    "name": "Your Company Name",
+    "logo": "base64EncodedLogoImage" // Optional
+  },
   "client": {
     "name": "Client Name",
     "address": "123 Client Street, City, Country",
@@ -80,15 +92,20 @@ To generate an invoice programmatically, send a POST request to `/api/invoices` 
     "rate": 0.1,
     "description": "GST"
   },
-  "notes": "Thank you for your business!"
+  "notes": "Thank you for your business!",
+  "template": "classic", // classic, modern, or minimal
+  "currency": "USD" // USD, EUR, GBP, JPY, CAD, AUD
 }
 
 Example using cURL:
 
 curl -X POST \
-  http://localhost:3000/api/invoices \
+  http://localhost:3000/api/invoices/pdf \
   -H 'Content-Type: application/json' \
   -d '{
+    "company": {
+      "name": "Your Company Name"
+    },
     "client": {
       "name": "Client Name",
       "address": "123 Client Street, City, Country",
@@ -111,7 +128,9 @@ curl -X POST \
       "rate": 0.1,
       "description": "GST"
     },
-    "notes": "Thank you for your business!"
+    "notes": "Thank you for your business!",
+    "template": "classic",
+    "currency": "USD"
   }'
 
 ## Project Structure
@@ -139,9 +158,9 @@ invoice-generator-api/
 
 ## API Documentation
 
-### Generate Invoice
+### Generate PDF Invoice
 
-**Endpoint:** `POST /api/invoices`
+**Endpoint:** `POST /api/invoices/pdf`
 
 **Content-Type:** `application/json`
 
@@ -149,6 +168,9 @@ invoice-generator-api/
 
 | Field | Type | Description |
 |-------|------|-------------|
+| company | Object | Your company information |
+| company.name | String | Company name |
+| company.logo | String | Base64 encoded logo (optional) |
 | client | Object | Client information |
 | client.name | String | Client name |
 | client.address | String | Client address |
@@ -166,22 +188,37 @@ invoice-generator-api/
 | tax.rate | Number | Tax rate (0 to 1) |
 | tax.description | String | Tax description |
 | notes | String | Additional notes (optional) |
+| template | String | PDF template (classic, modern, minimal) |
+| currency | String | Currency code (USD, EUR, GBP, JPY, CAD, AUD) |
 
 **Response:**
 
 A PDF file with the generated invoice.
 
+### Generate JSON Invoice
+
+**Endpoint:** `POST /api/invoices/json`
+
+**Content-Type:** `application/json`
+
+**Request Body:**
+
+Same as for the PDF endpoint.
+
+**Response:**
+
+A JSON file with the invoice data including calculated totals.
+
 ## Future Enhancements
 
-- Multiple invoice templates
 - Save invoices to database
 - User accounts and authentication
 - Recurring invoices
 - Email delivery
 - Payment integration
-- Support for multiple currencies
 - Advanced tax handling
 - Invoice tracking and status updates
+- Additional currency support
 
 ## License
 
