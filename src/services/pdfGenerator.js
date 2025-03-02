@@ -1,6 +1,4 @@
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path');
 
 function generateInvoicePDF(invoiceData) {
   return new Promise((resolve, reject) => {
@@ -38,14 +36,41 @@ function generateInvoicePDF(invoiceData) {
 }
 
 function generateHeader(doc, invoiceData) {
-  doc
-    .fontSize(20)
-    .text('INVOICE', 50, 45)
-    .fontSize(10)
-    .text(`Invoice Number: ${invoiceData.invoice.invoiceNumber}`, 50, 80)
-    .text(`Date: ${formatDate(invoiceData.invoice.date)}`, 50, 95)
-    .text(`Due Date: ${formatDate(invoiceData.invoice.dueDate)}`, 50, 110)
-    .moveDown();
+  // Add logo if provided
+  if (invoiceData.company?.logo) {
+    try {
+      const logoImg = invoiceData.company.logo.split(',')[1]; // Get base64 data
+      doc.image(Buffer.from(logoImg, 'base64'), 50, 45, { width: 80 });
+      // Adjust position if logo is present
+      doc
+        .fontSize(20)
+        .text('INVOICE', 150, 45)
+        .fontSize(10)
+        .text(invoiceData.company.name, 150, 70)
+        .text(`Invoice Number: ${invoiceData.invoice.invoiceNumber}`, 150, 85)
+        .text(`Date: ${formatDate(invoiceData.invoice.date)}`, 150, 100)
+        .text(`Due Date: ${formatDate(invoiceData.invoice.dueDate)}`, 150, 115)
+        .moveDown();
+    } catch (err) {
+      console.error('Error rendering logo:', err);
+      // Fallback to text-only header
+      renderTextHeader();
+    }
+  } else {
+    renderTextHeader();
+  }
+  
+  function renderTextHeader() {
+    doc
+      .fontSize(20)
+      .text('INVOICE', 50, 45)
+      .fontSize(10)
+      .text(invoiceData.company?.name || '', 50, 70)
+      .text(`Invoice Number: ${invoiceData.invoice.invoiceNumber}`, 50, 85)
+      .text(`Date: ${formatDate(invoiceData.invoice.date)}`, 50, 100)
+      .text(`Due Date: ${formatDate(invoiceData.invoice.dueDate)}`, 50, 115)
+      .moveDown();
+  }
 }
 
 function generateCustomerInformation(doc, invoiceData) {
@@ -62,8 +87,8 @@ function generateCustomerInformation(doc, invoiceData) {
 
 function generateInvoiceTable(doc, invoiceData, subtotal, taxAmount, total) {
   const invoiceTableTop = 300;
-  doc.font('Helvetica-Bold');
   
+  doc.font('Helvetica-Bold');
   generateTableRow(
     doc,
     invoiceTableTop,
@@ -73,34 +98,43 @@ function generateInvoiceTable(doc, invoiceData, subtotal, taxAmount, total) {
     'Line Total'
   );
   
-  doc.font('Helvetica');
+  generateHr(doc, invoiceTableTop + 20);
   
   let position = invoiceTableTop + 30;
   
+  doc.font('Helvetica');
+  
   invoiceData.items.forEach(item => {
     const lineTotal = item.quantity * item.unitPrice;
+    
     generateTableRow(
       doc,
       position,
       item.description,
       item.quantity,
-      formatCurrency(item.unitPrice),
-      formatCurrency(lineTotal)
+      formatCurrency(item.unitPrice, invoiceData.currency),
+      formatCurrency(lineTotal, invoiceData.currency)
     );
-    position += 30;
+    
+    position += 20;
   });
   
+  generateHr(doc, position);
+  
+  // Subtotal
+  position += 20;
+  doc.font('Helvetica-Bold');
   generateTableRow(
     doc,
     position,
     '',
     '',
     'Subtotal',
-    formatCurrency(subtotal)
+    formatCurrency(subtotal, invoiceData.currency)
   );
   
-  position += 30;
-  
+  // Tax
+  position += 20;
   const taxDesc = invoiceData.tax?.description || 'Tax';
   generateTableRow(
     doc,
@@ -108,11 +142,11 @@ function generateInvoiceTable(doc, invoiceData, subtotal, taxAmount, total) {
     '',
     '',
     `${taxDesc} (${formatPercentage(invoiceData.tax?.rate || 0)})`,
-    formatCurrency(taxAmount)
+    formatCurrency(taxAmount, invoiceData.currency)
   );
   
-  position += 30;
-  
+  // Total
+  position += 20;
   doc.font('Helvetica-Bold');
   generateTableRow(
     doc,
@@ -120,15 +154,18 @@ function generateInvoiceTable(doc, invoiceData, subtotal, taxAmount, total) {
     '',
     '',
     'Total',
-    formatCurrency(total)
+    formatCurrency(total, invoiceData.currency)
   );
-  doc.font('Helvetica');
 }
 
 function generateFooter(doc, invoiceData) {
+  doc
+    .fontSize(10)
+    .text('Thank you for your business!', 50, 700, { align: 'center' });
+  
   if (invoiceData.notes) {
     doc
-      .moveDown(4)
+      .moveDown()
       .fontSize(10)
       .text('Notes:', 50)
       .text(invoiceData.notes, 50);
@@ -144,17 +181,35 @@ function generateTableRow(doc, y, desc, qty, unitPrice, lineTotal) {
     .text(lineTotal, 450, y, { width: 90, align: 'right' });
 }
 
-function formatCurrency(amount) {
-  return '$' + amount.toFixed(2);
+function generateHr(doc, y) {
+  doc
+    .strokeColor('#CCCCCC')
+    .lineWidth(1)
+    .moveTo(50, y)
+    .lineTo(550, y)
+    .stroke();
+}
+
+function formatDate(date) {
+  const dateObj = new Date(date);
+  return dateObj.toLocaleDateString();
+}
+
+function formatCurrency(amount, currencyCode = 'USD') {
+  const symbols = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    JPY: '¥',
+    CAD: 'C$',
+    AUD: 'A$'
+  };
+  
+  return (symbols[currencyCode] || '$') + amount.toFixed(2);
 }
 
 function formatPercentage(decimal) {
-  return (decimal * 100).toFixed(0) + '%';
-}
-
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString();
+  return (decimal * 100).toFixed(1) + '%';
 }
 
 module.exports = { generateInvoicePDF }; 

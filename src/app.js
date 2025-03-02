@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 const { errorHandler } = require('./utils/errorHandler');
 
@@ -12,10 +13,18 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// API routes
 app.use('/api', invoiceRoutes);
 
-// Error handling
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Route for root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+// Error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {

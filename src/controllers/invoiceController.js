@@ -17,6 +17,34 @@ const generateInvoice = async (req, res, next) => {
   }
 };
 
+const generateInvoiceJson = async (req, res, next) => {
+  try {
+    const invoiceData = req.body;
+    
+    // Calculate totals
+    const subtotal = invoiceData.items.reduce((sum, item) => {
+      return sum + (item.quantity * item.unitPrice);
+    }, 0);
+    
+    const taxRate = invoiceData.tax?.rate || 0;
+    const taxAmount = subtotal * taxRate;
+    const total = subtotal + taxAmount;
+    
+    // Return the invoice data with calculated totals
+    return res.json({
+      ...invoiceData,
+      calculated: {
+        subtotal,
+        taxAmount,
+        total
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  generateInvoice
+  generateInvoice,
+  generateInvoiceJson
 }; 

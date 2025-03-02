@@ -1,6 +1,11 @@
 const Joi = require('joi');
 
 const invoiceSchema = Joi.object({
+  company: Joi.object({
+    name: Joi.string().required(),
+    logo: Joi.string().allow(null, '')
+  }).required(),
+  
   client: Joi.object({
     name: Joi.string().required(),
     address: Joi.string().required(),
@@ -27,7 +32,11 @@ const invoiceSchema = Joi.object({
     description: Joi.string()
   }),
   
-  notes: Joi.string()
+  notes: Joi.string().allow(''),
+  
+  template: Joi.string().valid('classic', 'modern', 'minimal').default('classic'),
+  
+  currency: Joi.string().valid('USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD').default('USD')
 });
 
 const validateInvoiceData = (req, res, next) => {
