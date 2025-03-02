@@ -136,25 +136,25 @@ curl -X POST \
 ## Project Structure
 
 invoice-generator-api/
-├── frontend/               # Frontend files
-│   ├── index.html         # Main HTML file
-│   ├── script.js          # Frontend JavaScript
-│   └── styles.css         # CSS styles
-├── src/                    # Backend source code
-│   ├── app.js             # Express application
-│   ├── controllers/       # Route controllers
+├── frontend/                      # Frontend files
+│   ├── index.html                 # Main HTML file
+│   ├── script.js                  # Frontend JavaScript
+│   └── styles.css                 # CSS styles
+├── src/                           # Backend source code
+│   ├── app.js                     # Express application
+│   ├── controllers/               # Route controllers
 │   │   └── invoiceController.js
-│   ├── middleware/        # Express middleware
+│   ├── middleware/                # Express middleware
 │   │   └── validator.js
-│   ├── routes/            # API routes
+│   ├── routes/                    # API routes
 │   │   └── invoiceRoutes.js
-│   ├── services/          # Business logic
+│   ├── services/                  # Business logic
 │   │   └── pdfGenerator.js
-│   └── utils/             # Utility functions
+│   └── utils/                     # Utility functions
 │       └── errorHandler.js
-├── .gitignore             # Git ignore file
-├── package.json           # NPM package config
-└── README.md              # This file
+├── .gitignore                     # Git ignore file
+├── package.json                   # NPM package config
+└── README.md                      # This file
 
 ## API Documentation
 
