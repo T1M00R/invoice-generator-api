@@ -10,7 +10,11 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: '*', // Or configure your specific domain
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 
 // API routes
@@ -27,8 +31,12 @@ app.get('/', (req, res) => {
 // Error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Invoice Generator API running on port ${PORT}`);
-});
+// Export the Express app for Vercel serverless
+module.exports = app;
 
-module.exports = app; 
+// Keep the app.listen for local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Invoice Generator API running on port ${PORT}`);
+  });
+} 
